@@ -11,6 +11,7 @@
   "dependencies": {
     "dotenv-defaults": "^1.0.2",
     "jira-client": "^6.14.0",
-    "jira-connector": "^3.0.1"
+    "jira-connector": "^3.0.1",
+    "moment": "^2.24.0"
   }
 }
