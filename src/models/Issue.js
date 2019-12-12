@@ -77,20 +77,6 @@ class Issue {
         logger.debug(`[ISSUE] ${id} - ${key}. Created by ${this.creator.toString()} `);
     }
 
-    getTotalSpentTime(month) {
-        /* return this.worklogs.reduce((prev, current) => {
-             return prev + current.seconds;
-         }, 0);*/
-    }
-
-    filterByContributor(name) {
-
-    }
-
-    getParticipants() {
-        //  return [...new Set(this.worklogs.map(wl => wl.author))]
-    };
-
     isBetween(first, last) {
         const validWl = this.worklogs.map(wl => wl.isBetween(first, last)).filter(wl => wl !== null);
 
@@ -101,15 +87,6 @@ class Issue {
         } else {
             return null;
         }
-    }
-
-    lastUpdate() {
-        /*  const first = new Worklog(null, null, {
-              updated: '1000-01-01'
-          });
-          const last = this.worklogs.reduce((prev, current) => prev.updated > current.updated ? prev : current, first);
-
-          return first.updated === last.updated ? null : last.updated;*/
     }
 
     getTotalTime() {

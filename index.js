@@ -1,10 +1,18 @@
 require('dotenv-defaults').config();
 const fs = require('fs');
+const blessed = require('blessed');
+const contrib = require('blessed-contrib');
 
 const Board = require('./src/models/Board');
 const Time = require('./src/models/Time');
 
 const logger = require('./src/utils/log.utils');
+const screen = blessed.screen();
+
+function randomColor() {
+    return [Math.random() * 255, Math.random() * 255, Math.random() * 255]
+}
+
 
 (async () => {
     // It works as expected, as long as you use the await keyword.
@@ -36,6 +44,29 @@ const logger = require('./src/utils/log.utils');
         is.worklogs.map(wl => {
             logger.info(` [ISSUE][${is.name}][WORKLOG] ${wl.created}  => Author: ${wl.author.name} ,Time: ${wl.time.getHours()}`);
         })
+
+        const bar = contrib.bar({
+            label: 'Weeks Hours',
+            barWidth: 4,
+            barSpacing: 6,
+            xOffset: 0,
+            maxHeight: 50,
+            barBgColor: 'red',
+            style: {
+                line: randomColor(),
+                text: randomColor(),
+                baseline: randomColor()
+            }
+        });
+
+        screen.append(bar);
+        bar.setData({
+            titles: monthIssues.map(is => is.name),
+            data: monthIssues.map(is => is.getTotalTime() / 3600)
+        });
+
+
+        screen.render();
     });
 
 

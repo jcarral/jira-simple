@@ -5,7 +5,6 @@ const Issue = require('./Issue');
 
 const fs = require('fs');
 
-//const Issue = require('.');
 class Author {
 
     constructor(data = {}){

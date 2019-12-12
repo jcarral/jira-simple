@@ -8,7 +8,7 @@ class Time {
     }
 
     getHours(){
-        return moment.utc(this.seconds*1000).format('DD HH:mm:ss')
+        return moment.utc(this.seconds*1000).format('HH:mm:ss')
     }
 
 };
