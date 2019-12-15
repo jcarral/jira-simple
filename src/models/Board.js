@@ -1,18 +1,18 @@
 require('dotenv-defaults').config();
-const {
-    Auth
-} = require('../auth')
+const Jira = require('../api/Jira')
 const Issue = require('./Issue');
 
 const BATCH = 50;
+const FIELDS = 'worklog,summary,issuetype,timespent,created,priority,labels,timeestimate,asignee,updated,status,description,timetracking,creator,reporter';
+
 
 const getAllIssues = (id) => {
-    return Auth.getIssuesForBoard(id, 0, 50, null, true)
+    return Jira.getIssues(id, 0, 50)
         .then(function (data) {
             const list = data.issues.map(issue => new Issue(issue));
 
             //LOG
-            list.forEach(issue => console.log(`[${issue.name}] => ${issue.getTotalSpentTime()}, Authors: ${issue.getParticipants()}`));
+            list.forEach(issue => console.log(`[${issue.name}] => ${issue.getTotalSpentTime()}, Jiraors: ${issue.getParticipants()}`));
 
             return list;
 
@@ -23,13 +23,13 @@ const getAllIssues = (id) => {
 const requestBoardData = async (id) => {
 
     let idx = 0;
-    const data = await Auth.getIssuesForBoard(id, idx, BATCH, null, true);
+    const data = await Jira.getIssues(id, { startAt : idx, maxResults: BATCH, fields : FIELDS });
     let totalResults = data.total;
     let issues = data.issues;
   
     while(issues.length < totalResults) {
         idx++;
-        let tmpData = await Auth.getIssuesForBoard(id, idx*BATCH, BATCH, null, true);
+        let tmpData = await Jira.getIssues(id, { startAt : idx*BATCH, maxResults: BATCH,  fields : FIELDS});
         issues = issues.concat(tmpData.issues);
     }
     return issues;
@@ -48,16 +48,6 @@ class Board {
             .then(buildBoard)
             .then(issues => this.issues = issues)
             .then(() => this);
-    }
-
-    getAllIssues() {
-        return getAllIssues(this.id);
-
-    }
-
-    getIssuesBetween(first, last) {
-        return getAllIssues(this.id)
-            .then(issues => issues.filter(issue => issue.isBetween(first, last)));
     }
 
     getUsers() {}

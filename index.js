@@ -8,9 +8,9 @@ const logger = require('./src/utils/log.utils');
 
 (async () => {
     // It works as expected, as long as you use the await keyword.
-    const example = await new Board(2);
-    logger.info("===================================================")
-    logger.info("")
+    const example = await new Board('SMC');
+    console.log("===================================================")
+    console.log("")
     const week2Issues = example.getIssues('2019-12-09', '2019-12-13');
 
     fs.writeFileSync('./file.json', JSON.stringify(week2Issues));
@@ -22,19 +22,19 @@ const logger = require('./src/utils/log.utils');
     const totalSecsWeek1 = week1Issues.reduce((prev, curr) => prev + curr.getTotalTime(), 0);
     const totalSecsMonth = monthIssues.reduce((prev, curr) => prev + curr.getTotalTime(), 0);
 
-    logger.info(`Total hours: ${totalSecsMonth/3600}`)
-    logger.info(`Total hours week 1: ${totalSecsWeek1/3600}`)
-    logger.info(`Total hours week 2: ${totalSecsWeek2/3600}`)
+    console.log(`Total hours: ${totalSecsMonth/3600}`)
+    console.log(`Total hours week 1: ${totalSecsWeek1/3600}`)
+    console.log(`Total hours week 2: ${totalSecsWeek2/3600}`)
 
 
-    logger.info("===================================================")
-    logger.info("MONTH SUMMARY")
+    console.log("===================================================")
+    console.log("MONTH SUMMARY")
 
     monthIssues.map((is) => {
-        logger.info("===================================================")
-        logger.info(` [ISSUE][${is.name}] Total time: ${new Time(is.getTotalTime()).getHours()}`);
+        console.log("===================================================")
+        console.log(` [ISSUE][${is.name}] Total time: ${new Time(is.getTotalTime()).getHours()}`);
         is.worklogs.map(wl => {
-            logger.info(` [ISSUE][${is.name}][WORKLOG] ${wl.created}  => Author: ${wl.author.name} ,Time: ${wl.time.getHours()}`);
+            console.log(` [ISSUE][${is.name}][WORKLOG] ${wl.created}  => Author: ${wl.author.name} ,Time: ${wl.time.getHours()}`);
         })
     });
 
