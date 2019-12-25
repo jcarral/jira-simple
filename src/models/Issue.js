@@ -6,6 +6,7 @@ const User = require('./User');
 const Time = require('./Time');
 
 const logger = require('../utils/log.utils');
+const { unique } = require('../utils/array.utils');
 
 class IssueType {
     constructor(data) {
@@ -59,7 +60,7 @@ class Issue {
 
         this.id = id;
         this.name = key;
-        this.worklogs = (worklog ? worklog.worklogs : []).map(wl => new Worklog(wl));
+        this.worklogs = (worklog ? worklog.worklogs : []).map(wl => new Worklog(wl, key));
         this.summary = summary;
         this.created = moment(created, "YYYY-MM-DDTHH:mm:ss");
         this.priority = new Priority(priority);
@@ -77,19 +78,15 @@ class Issue {
         logger.debug(`[ISSUE] ${id} - ${key}. Created by ${this.creator.toString()} `);
     }
 
-    getTotalSpentTime(month) {
-        /* return this.worklogs.reduce((prev, current) => {
+    getTotalTime() {
+        return this.worklogs.reduce((prev, current) => {
              return prev + current.seconds;
-         }, 0);*/
+         }, 0);
     }
 
-    filterByContributor(name) {
-
+    getAuthors() {
+        return unique(this.worklogs.map(wl => wl.author), 'name');
     }
-
-    getParticipants() {
-        //  return [...new Set(this.worklogs.map(wl => wl.author))]
-    };
 
     isBetween(first, last) {
         const validWl = this.worklogs.map(wl => wl.isBetween(first, last)).filter(wl => wl !== null);
@@ -103,13 +100,25 @@ class Issue {
         }
     }
 
+    filterByUser(username) {
+        const validWl = this.worklogs.filter(wl => wl.author.name === username);
+
+        if (validWl && validWl.length > 0) {
+            const clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this);
+            clone.worklogs = validWl;
+            return clone;
+        } else {
+            return null;
+        }
+    }
+
     lastUpdate() {
-        /*  const first = new Worklog(null, null, {
-              updated: '1000-01-01'
+         const first = new Worklog(null, null, {
+              updated: '0000-01-01'
           });
           const last = this.worklogs.reduce((prev, current) => prev.updated > current.updated ? prev : current, first);
 
-          return first.updated === last.updated ? null : last.updated;*/
+          return first.updated === last.updated ? null : last.updated;
     }
 
     getTotalTime() {

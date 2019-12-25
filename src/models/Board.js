@@ -1,63 +1,120 @@
-require('dotenv-defaults').config();
-const Jira = require('../api/Jira')
 const Issue = require('./Issue');
+const {
+    unique,
+    flat
+} = require('../utils/array.utils');
 
-const BATCH = 50;
-const FIELDS = 'worklog,summary,issuetype,timespent,created,priority,labels,timeestimate,asignee,updated,status,description,timetracking,creator,reporter';
 
 
-const getAllIssues = (id) => {
-    return Jira.getIssues(id, 0, 50)
-        .then(function (data) {
-            const list = data.issues.map(issue => new Issue(issue));
+const buildBoard = srcIssues => {
 
-            //LOG
-            list.forEach(issue => console.log(`[${issue.name}] => ${issue.getTotalSpentTime()}, Jiraors: ${issue.getParticipants()}`));
+    const issues = srcIssues.map(issue => new Issue(issue));
+    let users = [];
+    let status = [];
+    let types = [];
+    let priorities = [];
 
-            return list;
+    issues.forEach(issue => {
+        users = users.concat(issue.getAuthors());
+        status.push(issue.status);
+        types.push(issue.issuetype);
+        priorities.push(issue.priority);
+    });
 
-        })
+    users = unique(users, 'name');
+    status = unique(status, 'name');
+    types = unique(types, 'name');
+    priorities = unique(priorities, 'name');
+
+    return {
+        users,
+        issues,
+        status,
+        types,
+        priorities,
+    };
 };
 
-
-const requestBoardData = async (id) => {
-
-    let idx = 0;
-    const data = await Jira.getIssues(id, { startAt : idx, maxResults: BATCH, fields : FIELDS });
-    let totalResults = data.total;
-    let issues = data.issues;
-  
-    while(issues.length < totalResults) {
-        idx++;
-        let tmpData = await Jira.getIssues(id, { startAt : idx*BATCH, maxResults: BATCH,  fields : FIELDS});
-        issues = issues.concat(tmpData.issues);
+const applyFilter = (key, filters, issue) => {
+    const value = filters[key];
+    if(!issue) return;
+    switch (key) {
+        case 'worklogAuthor':
+            return issue.filterByUser(value);
+        default:
+            break;
     }
-    return issues;
+}
+
+const shouldApplyExtraFilters = filters => Object.keys(filters).filter(key => filters[key] && filters[key].length > 0).length > 0;
+
+const issueReduceFn = filters => (prev = [], issue) => {
+    
+    let issueToMap = issue;
+    Object.keys(filters).forEach(key => {
+        issueToMap = applyFilter(key, filters, issueToMap);
+    });
+
+    return issueToMap ? prev.concat([issueToMap]) : prev;
 };
 
-const buildBoard = issues => {
-    return issues.map(issue => new Issue(issue));
-};
 
 
 class Board {
 
-    constructor(id) {
+    constructor(id, lisOfIssues = []) {
         this.id = id;
-        return requestBoardData(id)
-            .then(buildBoard)
-            .then(issues => this.issues = issues)
-            .then(() => this);
+        const issuesResponse = buildBoard(lisOfIssues);
+
+        Object.assign(this, issuesResponse);
+
     }
 
-    getUsers() {}
-    getIssues(first, last) {
-        return this.issues.map(issue => issue.isBetween(first, last)).filter(issue => issue !== null);
+    getIssues(filters = {}) {
+        const {
+            first,
+            last,
+            ...rest
+        } = filters;
+        const reduceFn = shouldApplyExtraFilters(filters) ? issueReduceFn(rest) : () => true;
+        return this.issues.map(issue => issue.isBetween(first, last)).filter(issue => issue !== null).reduce(reduceFn, []);
+    }
+
+
+    getLogsByDay(filters = {}) {
+       
+        const rangeLogs = this.getIssues(filters).map(is => is.worklogs).filter(wl => wl && wl.length > 0).reduce(flat, []);
+
+        let groupedData = {};
+
+        rangeLogs.forEach(wl => {
+            const currentDay = wl.started.format('YYYY-MM-DD');
+
+            if (!groupedData[currentDay]) {
+                groupedData[currentDay] = [];
+            }
+            groupedData[currentDay].push(wl);
+        });
+
+        return groupedData;
+    }
+
+    getIssue(key) {
+        return this.issues.find(issue => typeof key === typeof 1 ? issue.id === key : issue.name === key);
+    }
+
+    getUsers() {
+        return this.users;
+    }
+
+    getIssueTypes() {
+        return this.types;
+    }
+
+    getIssueStatus() {
+        return this.status;
     }
     
-    getLogs(first, last){}
-
-
 }
 
 module.exports = Board;
