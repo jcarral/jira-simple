@@ -1,7 +1,7 @@
 const request = require('request');
 
 const Errors = require('../constants/Errors');
-const Board = require('./Board');
+const Board = require('../models/Board');
 
 const defaultOpts = {
     protocol: 'https',
