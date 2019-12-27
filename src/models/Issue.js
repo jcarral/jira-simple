@@ -1,11 +1,9 @@
-require('dotenv-defaults').config();
 const moment = require('moment');
 
 const Worklog = require('./Worklog');
 const User = require('./User');
 const Time = require('./Time');
 
-const logger = require('../utils/log.utils');
 const { unique } = require('../utils/array.utils');
 
 class IssueType {
@@ -75,7 +73,6 @@ class Issue {
         this.creator = new User(creator);
         this.reporter = new User(reporter);
 
-        logger.debug(`[ISSUE] ${id} - ${key}. Created by ${this.creator.toString()} `);
     }
 
     getTotalTime() {

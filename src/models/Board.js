@@ -5,7 +5,6 @@ const {
 } = require('../utils/array.utils');
 
 
-
 const buildBoard = srcIssues => {
 
     const issues = srcIssues.map(issue => new Issue(issue));

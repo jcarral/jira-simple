@@ -1,9 +1,7 @@
-require('dotenv-defaults').config();
 const moment = require('moment');
 
 const Time = require('./Time');
 const User = require('./User');
-const logger = require('../utils/log.utils');
 
 const getComment = (comment = {}) => {
     const { content = [] } = comment;
@@ -28,7 +26,6 @@ const getComment = (comment = {}) => {
 
 class Worklog {
 
-
     constructor(data, issueName) {
         const { id, created, timeSpentSeconds, author = {}, started, updated, comment, issueId } = data;
         
@@ -43,7 +40,6 @@ class Worklog {
         this.updated = moment(updated, "YYYY-MM-DDTHH:mm:ss");
         this.comment = getComment(comment);
         
-        logger.debug(`[WORKLOG][${issueId}] ${id}. Author => ${author.name}. Time => ${this.time.seconds}`);
     }
 
     isBetween(first, last) {
