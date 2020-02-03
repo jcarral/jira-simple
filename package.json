@@ -1,5 +1,5 @@
 {
-  "name": "@jcarral/jira-simple",
+  "name": "jira-simple",
   "version": "0.0.1",
   "description": "Jira simple client",
   "main": "src/index.js",
@@ -11,9 +11,6 @@
   "dependencies": {
     "moment": "^2.24.0",
     "request": "^2.88.0"
-  },
-  "publishConfig": {
-    "registry":"https://npm.pkg.github.com/"
   },
   "repository": {
     "url": "https://github.com/jcarral/jira-simple.git"
