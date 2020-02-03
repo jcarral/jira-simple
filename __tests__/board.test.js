@@ -4,6 +4,7 @@ const { JiraClient, Board } = require('../src');
 
 
 let board;
+
 jest.setTimeout(30000);
 
 const loadBoard = async () => {
