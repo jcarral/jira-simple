@@ -22,3 +22,6 @@ jobs:
     - run: npm test
       env:
         CI: true
+        JIRAHOST: ${{ secrets.JIRA_TEST_HOST }}
+        JIRANAME: ${{ secrets.JIRA_TEST_TOKEN }}
+        JIRAPWD: ${{ secrets.JIRA_TEST_USERNAME }}
