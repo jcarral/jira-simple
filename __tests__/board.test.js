@@ -15,9 +15,9 @@ const loadBoard = async () => {
         password: process.env.JIRAPWD,	
     });
 
-    console.log("Loading board");
+    console.log("Loading board", client);
     board = await client.getBoard('SMC');
-    console.log("Board loaded", board);
+    console.log("Board loaded");
 };
 
 const checkIssue = issue => {
