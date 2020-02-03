@@ -8,7 +8,7 @@ let board;
 jest.setTimeout(30000);
 
 const loadBoard = async () => {
-    
+    console.log(process.env.JIRAHOST, process.env.JIRANAME);
     const client = new JiraClient({	
         host: process.env.JIRAHOST,	
         username: process.env.JIRANAME,	
