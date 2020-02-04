@@ -26,7 +26,6 @@ const makeRequest = async (options) => {
     return new Promise((resolve, reject) => {
         return request(options, (err, res, body) => {
             if(err) return reject(err);
-            console.log('RESPONSE',body)
             return resolve(JSON.parse(body));
         });
     });
