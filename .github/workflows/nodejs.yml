@@ -29,6 +29,6 @@ jobs:
         JIRANAME: ${{ secrets.JIRA_TEST_USERNAME }}
         JIRAPWD: ${{ secrets.JIRA_TEST_TOKEN }}
     - run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      env:
+        NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
         
