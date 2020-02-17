@@ -5,7 +5,7 @@ const Board = require('../models/Board');
 
 const defaultOpts = {
     protocol: 'https',
-    apiVersion: '2',
+    apiVersion: '3',
     strictSSL: true
 };
 const BATCH = 50;
@@ -38,12 +38,12 @@ const requestBoard = async (boardOptions, boardId, jqlFilters = {}) => {
     const requestOptions = {
         method: 'GET',
         auth : { username : boardOptions.username, password: boardOptions.password },
-        url: `${boardOptions.host}/rest/api/3/search${buildJql(jqlFilters)}&worklogDate>0`,
+        url: `${boardOptions.host}/rest/api/2/search${buildJql(jqlFilters)}&worklogDate>0`,
         headers: {
-            'Accept': 'application/json'
+            'Accept': 'application/json; charset=utf-8',
+            'Content-type': 'application/json; charset=utf-8'
          }
     }
-
     return makeRequest(requestOptions);
 
 };

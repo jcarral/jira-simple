@@ -1,10 +1,11 @@
 class User {
     constructor(data = {}) {
-        const { name, id, email = '' } = data;
+        const { name, id, accountId = '', email, emailAddress = '', displayName = '' } = data;
 
-        this.id = id;
-        this.name = name;
-        this.email = email;
+        this.id = id || accountId;
+        this.name = name || displayName;
+        this.email = email || emailAddress;
+        this.displayName = displayName;
 
     }
 

@@ -76,7 +76,15 @@ class Board {
             ...rest
         } = filters;
         const reduceFn = shouldApplyExtraFilters(filters) ? issueReduceFn(rest) : () => true;
-        return this.issues.map(issue => issue.isBetween(first, last)).filter(issue => issue !== null).reduce(reduceFn, []);
+        return this.issues.map(issue => issue.isBetween(first, last)).filter(issue => issue !== null).reduce(reduceFn, []).sort((prev, curr) => {
+            if (prev.id > curr.id) {
+                return 1;
+            }
+            if (curr.id > prev.id) {
+                return -1;
+            }
+            return 0;
+        });
     }
 
 
