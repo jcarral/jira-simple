@@ -28,6 +28,8 @@ jobs:
         JIRAHOST: ${{ secrets.JIRA_TEST_HOST }}
         JIRANAME: ${{ secrets.JIRA_TEST_USERNAME }}
         JIRAPWD: ${{ secrets.JIRA_TEST_TOKEN }}
+        TEST_BOARD_NAME: ${{ secrets.JIRA_TEST_TOKEN }}
+        TEST_SEARCH_TERM: ${{ secrets.TEST_SEARCH_TERM }}  
     - run: npm publish --access public
       env:
         NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
