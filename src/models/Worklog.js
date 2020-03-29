@@ -43,6 +43,15 @@ class Worklog {
     }
 
     isBetween(first, last) {
+
+        if(!first || !first.length) {
+            first = moment().subtract(1, 'year').format('YYYY-MM-DD');   
+        }
+
+        if(!last || !last.length) {
+            last = moment().add(1, 'year').format('YYYY-MM-DD');
+        }
+
         return this.started.isBetween(first, last) ? this : null;
     }
 

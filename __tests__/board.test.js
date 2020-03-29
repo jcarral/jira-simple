@@ -1,7 +1,9 @@
 require('dotenv-defaults').config()
 
-const { JiraClient, Board } = require('../src');
+const { JiraClient } = require('../src');
 
+const SEARCH_TERM = process.env.TEST_SEARCH_TERM;
+const BOARD_NAME = process.env.TEST_BOARD_NAME;
 
 let board;
 
@@ -15,7 +17,7 @@ const loadBoard = async () => {
         password: process.env.JIRAPWD,	
     });
 
-    board = await client.getBoard('SMC');
+    board = await client.getBoard(BOARD_NAME);
 };
 
 const checkIssue = issue => {
@@ -29,12 +31,38 @@ const checkIssue = issue => {
 beforeAll(async () => await loadBoard());
 
 describe('getBoard ', () => {
-    it('Check issues in december', async () => {
+
+    it(`Check all issues`, async () => {
+
+        const issues = board.getIssues({});
+
+        expect(issues).not.toBeNull();
+        expect(issues).not.toHaveLength(0);
+
+        issues.forEach(issue => checkIssue(issue));
+        
+    });
+
+
+    it('Check issues from december', async () => {
         
         const issues = board.getIssues({ first: '2019-12-01', last: '2019-12-31' });
         expect(issues).not.toBeNull();
         expect(issues).not.toHaveLength(0);
 
         issues.forEach(issue => checkIssue(issue));
+    });
+
+
+    it(`Check issue which contains the word "${SEARCH_TERM}"`, async () => {
+
+        const issues = board.getIssues({ searchTerm : SEARCH_TERM });
+
+        expect(issues).not.toBeNull();
+        expect(issues).not.toHaveLength(0);
+
+        issues.forEach(issue => checkIssue(issue));
+        issues.forEach(issue => expect(issue.summary.toUpperCase()).toMatch(`${SEARCH_TERM.toUpperCase()}`));
+
     });
 });

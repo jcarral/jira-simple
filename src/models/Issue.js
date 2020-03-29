@@ -86,8 +86,9 @@ class Issue {
     }
 
     isBetween(first, last) {
+        
         const validWl = this.worklogs.map(wl => wl.isBetween(first, last)).filter(wl => wl !== null);
-
+        
         if (validWl && validWl.length > 0) {
             const clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this);
             clone.worklogs = validWl;
@@ -122,7 +123,9 @@ class Issue {
         return this.worklogs.reduce((prev, curr) => prev + curr.time.seconds, 0);
     }
 
-
+    filterByName(text) {
+        return this.summary && text && text.length && this.summary.toUpperCase().includes(text.toUpperCase()) ? Object.assign(Object.create(Object.getPrototypeOf(this)), this) : null;
+    }
 
 };
 

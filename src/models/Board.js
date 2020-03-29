@@ -40,12 +40,14 @@ const applyFilter = (key, filters, issue) => {
     switch (key) {
         case 'worklogAuthor':
             return issue.filterByUser(value);
+        case 'searchTerm':
+            return issue.filterByName(value);
         default:
             break;
     }
 }
 
-const shouldApplyExtraFilters = filters => Object.keys(filters).filter(key => filters[key] && filters[key].length > 0).length > 0;
+const shouldApplyExtraFilters = filters => Object.keys(filters).filter(key => filters[key] && filters[key].length).length;
 
 const issueReduceFn = filters => (prev = [], issue) => {
     
@@ -75,7 +77,8 @@ class Board {
             last,
             ...rest
         } = filters;
-        const reduceFn = shouldApplyExtraFilters(filters) ? issueReduceFn(rest) : () => true;
+
+        const reduceFn = shouldApplyExtraFilters(filters) ? issueReduceFn(rest) : (prev, current) => [...prev, current];
         return this.issues.map(issue => issue.isBetween(first, last)).filter(issue => issue !== null).reduce(reduceFn, []).sort((prev, curr) => {
             if (prev.id > curr.id) {
                 return 1;
