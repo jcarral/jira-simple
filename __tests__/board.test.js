@@ -46,7 +46,7 @@ describe('getBoard ', () => {
 
     it('Check issues from december', async () => {
         
-        const issues = board.getIssues({ first: '2019-12-01', last: '2019-12-31' });
+        const issues = board.getIssues({ first: '2020-05-01', last: '2020-05-13' });
         expect(issues).not.toBeNull();
         expect(issues).not.toHaveLength(0);
 

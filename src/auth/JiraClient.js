@@ -31,6 +31,20 @@ const makeRequest = async (options) => {
     });
 }
 
+const requestWorklogs = async (boardOptions, issueIdOrKey) => {
+    const requestOptions = {
+        method: 'GET',
+        auth : { username : boardOptions.username, password: boardOptions.password },
+        url: `${boardOptions.host}/rest/api/2/issue/${issueIdOrKey}/worklog`,
+        headers: {
+            'Accept': 'application/json; charset=utf-8',
+            'Content-type': 'application/json; charset=utf-8'
+         }
+    }
+
+    return makeRequest(requestOptions);
+}
+
 const requestBoard = async (boardOptions, boardId, jqlFilters = {}) => {
     
     jqlFilters.project = boardId;
@@ -47,6 +61,20 @@ const requestBoard = async (boardOptions, boardId, jqlFilters = {}) => {
     return makeRequest(requestOptions);
 
 };
+
+
+const updateWorklogs = async (boardOptions, issues) => {
+    let nextIssues = [];
+    for(let issue of issues) {
+
+        if(issue.fields && issue.fields.worklog && issue.fields.worklog && issue.fields.worklog.total > 19) {
+            const res = await requestWorklogs(boardOptions, issue.id)
+            issue.fields.worklog.worklogs = res.worklogs;
+        } 
+        nextIssues.push(issue);
+    }
+    return nextIssues;
+}
 
 
 class Jira {
@@ -77,12 +105,13 @@ class Jira {
         let idx = 0;
         const data = await requestBoard(this.options, boardName, { startAt: idx, maxResults: BATCH, fields: BOARD_ISSUE_FIELDS });
         let totalResults = data.total;
-        let issues = data.issues;
+        let issues = await updateWorklogs(this.options, data.issues);
     
         while (issues.length < totalResults) {
             idx++;
             let tmpData = await requestBoard(this.options, boardName, { startAt: idx * BATCH, maxResults: BATCH, fields: BOARD_ISSUE_FIELDS });
-            issues = issues.concat(tmpData.issues);
+            let tmpIssues = await updateWorklogs(this.options, tmpData.issues);
+            issues = issues.concat(tmpIssues);
         }
         
         return new Board(boardName, issues);
